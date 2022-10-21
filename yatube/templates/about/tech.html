@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Технологии{% endblock %}
+{% block header %}Технологии:{% endblock %}
+{% block content %}
+    <ul>
+        <li>Python 3.7</li>
+        <li>Django 2.2.19</li>
+    </ul>
+    <p><h3>Вот что я умею:</h3></p>
+    <ul>
+        <li>Создавать приложения в Django</li>
+        <li>Создавать HTML-станицы</li>
+        <li>Создавать суперпользователя</li>
+        <li>Работать с моделями</li>
+        <li>Создавать формы</li>
+        <li>Применять декораторы</li>
+        <li>Добавлять к формам валидацию</li>
+        <li>Добавлять Paginator</li>
+    </ul>
+    </p><img src="{% static 'img/my_skill.png' %}" width="600" alt="My_skill"></p>
+{% endblock %}

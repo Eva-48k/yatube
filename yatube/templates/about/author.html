@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Об авторе{% endblock %}
+{% block header %}Привет, я автор{% endblock %}
+{% block content %}
+    <p>Меня зовут Женя. Я хочу стать программистом. Учиться мне помогает кот.</p>
+    <p><a href="https://github.com/Eva-48k">Мой github</a></p>
+    <br>
+    <img src="{% static 'img/kot.png' %}" width="600" alt="Кот">
+{% endblock %}
