@@ -8,7 +8,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from posts.models import Post, Group, Comment
-#from posts.forms import PostForm, CommentForm
+from posts.forms import PostForm, CommentForm
 
 User = get_user_model()
 
@@ -37,13 +37,13 @@ class PostsFormsCreateTests(TestCase):
             group=cls.group,
             author=cls.author,
         )
-        #cls.form = PostForm()
+        cls.form = PostForm()
         cls.comment = Comment.objects.create(
             post=cls.post,
             author=cls.author,
             text='тестовый комментарий'
         )
-        #cls.comment_form = CommentForm()
+        cls.comment_form = CommentForm()
 
     @classmethod
     def tearDownClass(cls):
