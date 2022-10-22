@@ -11,7 +11,6 @@ from django.core.cache import cache
 
 from posts.models import Post, Group, Comment
 
-
 User = get_user_model()
 
 # Создаем временную папку для медиа-файлов
@@ -296,6 +295,8 @@ class PostsViewsCommentTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='HasNoName')
         self.guest_client = Client()
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.user)
 
     def test_show_new_comment(self):
         """Проверяем, что комментарий появляется на странице поста."""
@@ -303,6 +304,46 @@ class PostsViewsCommentTests(TestCase):
             reverse('posts:post_detail', kwargs={'post_id': self.post.id}))
         new_comment = response.context['comments'][0]
         self.assertEqual(new_comment, self.comment)
+
+    def test_create_comment_from_anonymous(self):
+        """
+        Проверяем, что неавторизованный пользователь не может
+        создать комментарий.
+        """
+        comment_count = Comment.objects.count()
+        form_data = {'text': 'новый тестовый комментарий'}
+        response = self.guest_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            data=form_data,
+        )
+        self.assertRedirects(
+            response, reverse('login') + '?next=' + reverse(
+                'posts:add_comment', kwargs={'post_id': self.post.id}))
+        self.assertEqual(Comment.objects.count(), comment_count)
+        self.assertFalse(Comment.objects.filter(
+            text='новый тестовый комментарий',
+            post=self.post.id
+        ).exists()
+        )
+
+    def test_create_comment_for_authorizedP(self):
+        """
+        Проверяем, что при отправке валидной формы авторизованным
+        пользователем создаётся комментарий в БД.
+        """
+        comment_count = Comment.objects.count()
+        form_data = {'text': 'новый тестовый комментарий'}
+        self.authorized_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            data=form_data,
+        )
+        self.assertEqual(Comment.objects.count(), comment_count + 1)
+        self.assertTrue(
+            Comment.objects.filter(
+                text='новый тестовый комментарий',
+                post=self.post.id
+            ).exists()
+        )
 
 
 class PostsViewsCacheTests(TestCase):

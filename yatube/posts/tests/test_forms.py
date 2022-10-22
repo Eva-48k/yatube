@@ -7,8 +7,8 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from posts.models import Post, Group, Comment
-from posts.forms import PostForm, CommentForm
+from posts.models import Post, Group
+from posts.forms import PostForm
 
 User = get_user_model()
 
@@ -38,12 +38,6 @@ class PostsFormsCreateTests(TestCase):
             author=cls.author,
         )
         cls.form = PostForm()
-        cls.comment = Comment.objects.create(
-            post=cls.post,
-            author=cls.author,
-            text='тестовый комментарий'
-        )
-        cls.comment_form = CommentForm()
 
     @classmethod
     def tearDownClass(cls):
@@ -189,37 +183,3 @@ class PostsFormsCreateTests(TestCase):
         self.assertNotEqual(self.post.text, form_data['text'])
         # Проверяем, что не изменилась группа поста
         self.assertNotEqual(self.post.group_id, form_data['group'])
-
-    def test_create_comment(self):
-        """
-        Проверяем, что при отправке валидной формы создаётся комментарий в БД.
-        """
-        comment_count = Comment.objects.count()
-        form_data = {'text': 'тестовый комментарий'}
-        self.authorized_client.post(
-            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
-            data=form_data,
-        )
-        self.assertEqual(Comment.objects.count(), comment_count + 1)
-        self.assertTrue(
-            Comment.objects.filter(
-                text='тестовый комментарий',
-                post=self.post.id
-            ).exists()
-        )
-
-    def test_edit_post_from_anonymous(self):
-        """
-        Проверяем, что неавторизованный пользователь не может
-        создать комментарий.
-        """
-        comment_count = Comment.objects.count()
-        form_data = {'text': 'тестовый комментарий'}
-        response = self.guest_client.post(
-            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
-            data=form_data,
-        )
-        self.assertRedirects(
-            response, reverse('login') + '?next=' + reverse(
-                'posts:add_comment', kwargs={'post_id': self.post.id}))
-        self.assertEqual(Comment.objects.count(), comment_count)
