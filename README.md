@@ -46,4 +46,4 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-**Документация к API** доступна по ссылке: http://127.0.0.1:8000/redoc/
+**Документация к API** после запуска проекта доступна по ссылке: http://127.0.0.1:8000/redoc/
