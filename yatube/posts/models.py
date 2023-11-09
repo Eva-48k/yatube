@@ -6,7 +6,6 @@ from core.models import CreatedModel
 User = get_user_model()
 
 
-# Модель для управления сообществами:
 class Group(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
@@ -16,13 +15,11 @@ class Group(models.Model):
         return self.title
 
 
-# Модель для управления записями:
 class Post(CreatedModel):
     text = models.TextField(
         verbose_name='Текст поста',
         help_text='Введите текст поста'
     )
-    # Поле pub_date берём из модели CreatedModel
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -38,7 +35,6 @@ class Post(CreatedModel):
         verbose_name='Группа',
         help_text='Группа, к которой будет относиться пост'
     )
-    # Поле для картинки (необязательное)
     image = models.ImageField(
         verbose_name='Картинка',
         upload_to='posts/',
@@ -52,7 +48,6 @@ class Post(CreatedModel):
         return self.text[:15]
 
 
-# Модель для комментирования записей
 class Comment(CreatedModel):
     post = models.ForeignKey(
         Post,
@@ -68,7 +63,6 @@ class Comment(CreatedModel):
         verbose_name='Текст комментария к посту',
         help_text='Введите текст комментария'
     )
-    # Поле pub_date берём из модели CreatedModel
 
     class Meta:
         ordering = ['-pub_date']
@@ -77,7 +71,6 @@ class Comment(CreatedModel):
         return self.text[:15]
 
 
-# Модель для подписки на авторов
 class Follow(models.Model):
     user = models.ForeignKey(
         User,
